@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const sequelize = require('./db')
+const { sequelize } = require('./db')
 const models = require('./models/models')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
@@ -21,6 +21,12 @@ app.use('/api', router)
 app.use(errorHandler)
 
 const start = async () => {
+    
+    // Debug environment variables
+    // console.log('DB_NAME:', process.env.DB_NAME);
+    // console.log('DB_USER:', process.env.DB_USER);
+    // console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+
     try {
         await sequelize.authenticate()
         await sequelize.sync()
