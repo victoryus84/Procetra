@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Button, Container} from "react-bootstrap";
+import React, { useState } from 'react';
+import { Button, Container } from "react-bootstrap";
 import CreateBrand from "../components/modals/CreateBrand";
 import CreateDevice from "../components/modals/CreateDevice";
 import CreateType from "../components/modals/CreateType";

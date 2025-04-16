@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
-import {Button, Dropdown, Form, Row, Col} from "react-bootstrap";
-import {Context} from "../../index";
-import {createDevice, fetchBrands, fetchDevices, fetchTypes} from "../../http/deviceAPI";
-import {observer} from "mobx-react-lite";
+import { Button, Dropdown, Form, Row, Col } from "react-bootstrap";
+import { Context } from "../../index";
+import { createDevice, fetchBrands, fetchDevices, fetchTypes } from "../../http/deviceAPI";
+import { observer } from "mobx-react-lite";
 
 const CreateDevice = observer(({show, onHide}) => {
     const {device} = useContext(Context)

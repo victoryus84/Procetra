@@ -1,7 +1,7 @@
-import React, {useContext} from 'react';
-import {observer} from "mobx-react-lite";
-import {Context} from "../index";
-import {Pagination} from "react-bootstrap";
+import React, { useContext } from 'react';
+import { observer } from "mobx-react-lite";
+import { Context } from "../index";
+import { Pagination } from "react-bootstrap";
 
 const Pages = observer(() => {
     const {device} = useContext(Context)
