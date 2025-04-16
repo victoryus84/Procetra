@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  db:
+    container_name: db_${PROJECT_NAME}
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+       - "./shared/db/data:/var/lib/postgresql/data"
+       - "./shared/db/backup:/home:rw"
+    ports:
+      - "5432:5432"
