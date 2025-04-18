@@ -28,13 +28,13 @@ const CreateBrand = ({show, onHide}) => {
                     <Form.Control
                         value={value}
                         onChange={e => setValue(e.target.value)}
-                        placeholder={"Введите название типа"}
+                        placeholder={"Введите название брэнда"}
                     />
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-danger" onClick={onHide}>Закрыть</Button>
                 <Button variant="outline-success" onClick={addBrand}>Добавить</Button>
+                <Button variant="outline-danger" onClick={onHide}>Закрыть</Button>
             </Modal.Footer>
         </Modal>
     );
