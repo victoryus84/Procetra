@@ -8,7 +8,6 @@ import { observer } from "mobx-react-lite";
 const AppRouter = observer(() => {
     const {user} = useContext(Context)
 
-    console.log(user)
     return (
         <Routes>
             {/* Render authenticated routes if the user is authenticated */}

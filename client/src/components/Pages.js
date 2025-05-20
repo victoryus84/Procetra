@@ -13,7 +13,8 @@ const Pages = observer(() => {
     }
 
     return (
-        <Pagination className="mt-3">
+        <Pagination className="d-flex justify-content-center mt-5 mb-3-3">
+            <Pagination.Prev />
             {pages.map(page =>
                 <Pagination.Item
                     key={page}
@@ -23,6 +24,7 @@ const Pages = observer(() => {
                     {page}
                 </Pagination.Item>
             )}
+            <Pagination.Next />
         </Pagination>
     );
 });

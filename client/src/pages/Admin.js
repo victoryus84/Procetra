@@ -35,7 +35,7 @@ const Admin = () => {
                 Добавить устройство
             </Button>
             <Button
-                variant={"outline-dark"}
+                variant={"outline-danger"}
                 className="mt-4 p-2"
                 onClick={() => setPriceListVisible(true)} // Open ImportPriceList modal
             >

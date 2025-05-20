@@ -61,6 +61,53 @@ class DeviceController {
         )
         return res.json(device)
     }
+
+    async importDevices(req, res, next) {
+        try {
+            const { devices } = req.body; // Array of devices from the frontend
+            const files = req.files; // Uploaded image files
+
+            const createdDevices = [];
+
+            for (const device of devices) {
+                const { name, price, brandId, typeId, info, img } = device;
+
+                // Handle image upload
+                let fileName = null;
+                if (files && files[img]) {
+                    fileName = uuid.v4() + ".jpg";
+                    files[img].mv(path.resolve(__dirname, '..', 'static', fileName));
+                }
+
+                // Create the device
+                const createdDevice = await Device.create({
+                    name,
+                    price,
+                    brandId,
+                    typeId,
+                    img: fileName
+                });
+
+                // Handle device info
+                if (info) {
+                    const parsedInfo = JSON.parse(info);
+                    for (const i of parsedInfo) {
+                        await DeviceInfo.create({
+                            title: i.title,
+                            description: i.description,
+                            deviceId: createdDevice.id
+                        });
+                    }
+                }
+
+                createdDevices.push(createdDevice);
+            }
+
+            return res.json({ message: "Devices imported successfully", devices: createdDevices });
+        } catch (e) {
+            next(ApiError.badRequest(e.message));
+        }
+    }
 }
 
 module.exports = new DeviceController()

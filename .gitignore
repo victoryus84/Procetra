@@ -20,3 +20,5 @@
 
 /server/node_modules
 /server/shared
+
+/server/temp
