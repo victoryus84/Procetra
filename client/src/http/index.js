@@ -14,7 +14,10 @@ const authInterceptor = config => {
     if (token) {
         config.headers.authorization = `Bearer ${token}`;
     } else {
-        console.warn('No token found in localStorage');
+        if (process.env.NODE_ENV === 'development') {
+            // Log a warning in development mode if no token is found
+            console.warn('No token found in localStorage');
+        }
     }
     return config;
 };

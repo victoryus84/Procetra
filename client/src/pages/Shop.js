@@ -4,30 +4,30 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import TypeBar from "../components/TypeBar";
 import BrandBar from "../components/BrandBar";
-import DeviceList from "../components/DeviceList";
+import ProductList from "../components/ProductList";
 import { observer } from "mobx-react-lite";
 import { Context } from "../index";
-import { fetchBrands, fetchDevices, fetchTypes } from "../http/deviceAPI";
+import { fetchBrands, fetchProducts, fetchTypes } from "../http/productAPI";
 import Pages from "../components/Pages";
 
 const Shop = observer(() => {
-    const {device} = useContext(Context)
+    const {product} = useContext(Context)
 
     useEffect(() => {
-        fetchTypes().then(data => device.setTypes(data))
-        fetchBrands().then(data => device.setBrands(data))
-        fetchDevices(null, null, 1, 2).then(data => {
-            device.setDevices(data.rows)
-            device.setTotalCount(data.count)
+        fetchTypes().then(data => product.setTypes(data))
+        fetchBrands().then(data => product.setBrands(data))
+        fetchProducts(null, null, 1, 2).then(data => {
+            product.setProducts(data.rows)
+            product.setTotalCount(data.count)
         })
     }, [])
 
     useEffect(() => {
-        fetchDevices(device.selectedType.id, device.selectedBrand.id, device.page, 2).then(data => {
-            device.setDevices(data.rows)
-            device.setTotalCount(data.count)
+        fetchProducts(product.selectedType.id, product.selectedBrand.id, product.page, 2).then(data => {
+            product.setProducts(data.rows)
+            product.setTotalCount(data.count)
         })
-    }, [device.page, device.selectedType, device.selectedBrand,])
+    }, [product.page, product.selectedType, product.selectedBrand,])
 
     return (
         <Container>
@@ -37,7 +37,7 @@ const Shop = observer(() => {
                 </Col>
                 <Col md={9}>
                     <BrandBar/>
-                    <DeviceList/>
+                    <ProductList/>
                     <Pages/>
                 </Col>
             </Row>

@@ -40,7 +40,11 @@ const Auth = observer(() => {
         >
             <Card style={{ width: 600 }} className="p-5">
                 <h2 className="m-auto">{isLogin ? 'Авторизация' : "Регистрация"}</h2>
-                <Form className="d-flex flex-column">
+                <Form className="d-flex flex-column"
+                    onSubmit={e => {
+                        e.preventDefault();
+                        click();
+                }}>
                     <Form.Control
                         className="mt-3"
                         placeholder="Введите ваш email..."
@@ -66,8 +70,8 @@ const Auth = observer(() => {
                         }
                         <Button
                             variant={"outline-success"}
-                            onClick={click}
-                        >
+                            type="submit"
+                            >
                             {isLogin ? 'Войти' : 'Регистрация'}
                         </Button>
                     </Row>

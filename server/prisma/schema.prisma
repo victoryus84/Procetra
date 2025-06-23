@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BasketProduct {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @db.Timestamptz(6) @default(now())
+  updatedAt DateTime @db.Timestamptz(6) @default(now())
+  basketId  Int?
+  productId Int?
+  basket    Basket?  @relation(fields: [basketId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+model Basket {
+  id             Int            @id @default(autoincrement())
+  createdAt      DateTime       @db.Timestamptz(6) @default(now())
+  updatedAt      DateTime       @db.Timestamptz(6) @default(now())
+  userId         Int?
+  basketProducts  BasketProduct[]
+  user           User?          @relation(fields: [userId], references: [id])
+}
+
+model Brand {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique @db.VarChar(255)
+  createdAt   DateTime      @db.Timestamptz(6) @default(now())
+  updatedAt   DateTime      @db.Timestamptz(6) @default(now())
+  products    Product[]
+  typeBrands  TypeBrand[]
+}
+
+model ProductInfo {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  description String   @db.VarChar(1000)
+  createdAt   DateTime @db.Timestamptz(6) @default(now())
+  updatedAt   DateTime @db.Timestamptz(6) @default(now())
+  productId   Int?
+  product     Product? @relation(fields: [productId], references: [id])
+}
+
+model Product {
+  id             Int            @id @default(autoincrement())
+  name           String         @unique @db.VarChar(255)
+  price          Int
+  rating         Int?           @default(0)
+  img            String         @db.VarChar(255)
+  createdAt      DateTime       @db.Timestamptz(6) @default(now())
+  updatedAt      DateTime       @db.Timestamptz(6) @default(now())
+  typeId         Int?
+  brandId        Int?
+  basketProducts  BasketProduct[]
+  productInfos   ProductInfo[]
+  brand          Brand?         @relation(fields: [brandId], references: [id])
+  type           Type?          @relation(fields: [typeId], references: [id])
+  ratings        Rating[]
+  packCount      Int?
+  unitId         Int?
+  unit           Unit?          @relation(fields: [unitId], references: [id])
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  rate      Int
+  createdAt DateTime @db.Timestamptz(6) @default(now())
+  updatedAt DateTime @db.Timestamptz(6) @default(now())
+  userId    Int?
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+model TypeBrand {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @db.Timestamptz(6) @default(now())
+  updatedAt DateTime @db.Timestamptz(6) @default(now())
+  typeId    Int?
+  brandId   Int?
+  brand     Brand?   @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  type      Type?    @relation(fields: [typeId], references: [id], onDelete: Cascade)
+
+  @@unique([typeId, brandId])
+}
+
+model Type {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique @db.VarChar(255)
+  createdAt   DateTime    @db.Timestamptz(6) @default(now())
+  updatedAt   DateTime    @db.Timestamptz(6) @default(now())
+  products    Product[]
+  typeBrands  TypeBrand[]
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String?   @unique @db.VarChar(255)
+  password  String?   @db.VarChar(255)
+  role      String?   @default("USER") @db.VarChar(255)
+  createdAt DateTime  @db.Timestamptz(6) @default(now())
+  updatedAt DateTime  @db.Timestamptz(6) @default(now())
+  baskets   Basket[]
+  ratings   Rating[]
+}
+
+model Unit {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}

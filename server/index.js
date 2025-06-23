@@ -1,12 +1,12 @@
 require('dotenv').config()
 const express = require('express')
-const { sequelize } = require('./db')
-const models = require('./models/models')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const router = require('./routes/index')
 const errorHandler = require('./middleware/ErrorHandlingMiddleware')
 const path = require('path')
+
+const { prisma, createDatabaseIfNotExists } = require('./db')
 
 const PORT = process.env.PORT || 5000
 
@@ -15,21 +15,11 @@ app.use(cors())
 app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'static')))
 app.use(fileUpload({}))
-app.use('/api', router)
-
-// Обработка ошибок, последний Middleware
+app.use('/api/v1', router)
 app.use(errorHandler)
 
 const start = async () => {
-    
-    // Debug environment variables
-    // console.log('DB_NAME:', process.env.DB_NAME);
-    // console.log('DB_USER:', process.env.DB_USER);
-    // console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-
     try {
-        await sequelize.authenticate()
-        await sequelize.sync()
         app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
     } catch (e) {
         console.log(e)
@@ -38,3 +28,6 @@ const start = async () => {
 
 
 start()
+
+// Теперь ты можешь запускать createDatabaseIfNotExists вручную из консоли или отдельного скрипта:
+module.exports = { createDatabaseIfNotExists }

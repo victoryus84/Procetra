@@ -1,21 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from "react-bootstrap/Modal";
 import { Button, Form, Spinner } from "react-bootstrap";
 import * as XLSX from "xlsx";
-import { createProduct, fetchBrands, fetchTypes } from "../../http/productAPI";
+import { createType } from "../../http/productAPI"; // Импортируй функцию для создания типа
 
-const ImportPriceList = ({ show, onHide }) => {
+const ImportTypeList = ({ show, onHide }) => {
     const [file, setFile] = useState(null);
-    const [brands, setBrands] = useState([]);
-    const [types, setTypes] = useState([]);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (show) {
-            fetchBrands().then(data => setBrands(data));
-            fetchTypes().then(data => setTypes(data));
-        }
-    }, [show]);
 
     const handleFileUpload = (e) => {
         setFile(e.target.files[0]);
@@ -26,7 +17,7 @@ const ImportPriceList = ({ show, onHide }) => {
             alert("Пожалуйста, выберите файл!");
             return;
         }
-        if (!window.confirm("Вы уверены, что хотите сделать импорт из EXCEL?")) return;
+        if (!window.confirm("Вы уверены, что хотите импортировать типы из EXCEL?")) return;
 
         setLoading(true);
 
@@ -40,30 +31,12 @@ const ImportPriceList = ({ show, onHide }) => {
                 const jsonData = XLSX.utils.sheet_to_json(sheet);
 
                 for (const row of jsonData) {
-                    let brandId = row.brand;
-                    let typeId = row.type;
-
-                    if (isNaN(Number(brandId))) {
-                        const foundBrand = brands.find(b => b.name.toLowerCase() === String(row.brand).toLowerCase());
-                        brandId = foundBrand ? foundBrand.id : null;
-                    }
-                    if (isNaN(Number(typeId))) {
-                        const foundType = types.find(t => t.name.toLowerCase() === String(row.type).toLowerCase());
-                        typeId = foundType ? foundType.id : null;
-                    }
-
-                    if (row.name && row.price && brandId && typeId && row.img) {
-                        await createProduct({
-                            name: row.name,
-                            price: row.price,
-                            brandId,
-                            typeId,
-                            img: row.img,
-                        });
+                    if (row.name) {
+                        await createType({ name: row.name });
                     }
                 }
 
-                alert("Номенклатура успешно импортирована!");
+                alert("Типы успешно импортированы!");
                 setFile(null);
                 onHide();
             } catch (err) {
@@ -79,13 +52,13 @@ const ImportPriceList = ({ show, onHide }) => {
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Импорт устройств
+                    Импорт типов
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Upload XLSX File</Form.Label>
+                        <Form.Label>Загрузите XLSX файл</Form.Label>
                         <Form.Control
                             type="file"
                             accept=".xlsx"
@@ -107,4 +80,4 @@ const ImportPriceList = ({ show, onHide }) => {
     );
 };
 
-export default ImportPriceList;
+export default ImportTypeList;

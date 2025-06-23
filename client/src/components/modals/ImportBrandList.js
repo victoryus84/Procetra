@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react';
 import Modal from "react-bootstrap/Modal";
 import { Button, Form, Spinner } from "react-bootstrap";
 import * as XLSX from "xlsx";
-import { createProduct, fetchBrands, fetchTypes } from "../../http/productAPI";
+import { createBrand, fetchTypes, createTypeBrand } from "../../http/productAPI";
 
-const ImportPriceList = ({ show, onHide }) => {
+const ImportBrandList = ({ show, onHide }) => {
     const [file, setFile] = useState(null);
-    const [brands, setBrands] = useState([]);
     const [types, setTypes] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (show) {
-            fetchBrands().then(data => setBrands(data));
             fetchTypes().then(data => setTypes(data));
         }
     }, [show]);
@@ -26,7 +24,7 @@ const ImportPriceList = ({ show, onHide }) => {
             alert("Пожалуйста, выберите файл!");
             return;
         }
-        if (!window.confirm("Вы уверены, что хотите сделать импорт из EXCEL?")) return;
+        if (!window.confirm("Вы уверены, что хотите импортировать бренды из EXCEL?")) return;
 
         setLoading(true);
 
@@ -40,30 +38,27 @@ const ImportPriceList = ({ show, onHide }) => {
                 const jsonData = XLSX.utils.sheet_to_json(sheet);
 
                 for (const row of jsonData) {
-                    let brandId = row.brand;
                     let typeId = row.type;
 
-                    if (isNaN(Number(brandId))) {
-                        const foundBrand = brands.find(b => b.name.toLowerCase() === String(row.brand).toLowerCase());
-                        brandId = foundBrand ? foundBrand.id : null;
-                    }
+                    // Если type - не число, ищем по имени типа
                     if (isNaN(Number(typeId))) {
-                        const foundType = types.find(t => t.name.toLowerCase() === String(row.type).toLowerCase());
+                        const foundType = types.find(
+                            t => t.name.toLowerCase() === String(row.type).toLowerCase()
+                        );
                         typeId = foundType ? foundType.id : null;
                     }
 
-                    if (row.name && row.price && brandId && typeId && row.img) {
-                        await createProduct({
-                            name: row.name,
-                            price: row.price,
-                            brandId,
-                            typeId,
-                            img: row.img,
-                        });
+                    if (row.name && typeId) {
+                        // 1. Создаём бренд
+                        const brand = await createBrand({ name: row.name });
+                        // 2. Создаём связь Brand-Type
+                        if (brand && brand.id) {
+                            await createTypeBrand({ brandId: brand.id, typeId });
+                        }
                     }
                 }
 
-                alert("Номенклатура успешно импортирована!");
+                alert("Бренды успешно импортированы!");
                 setFile(null);
                 onHide();
             } catch (err) {
@@ -79,13 +74,13 @@ const ImportPriceList = ({ show, onHide }) => {
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Импорт устройств
+                    Импорт брендов
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Upload XLSX File</Form.Label>
+                        <Form.Label>Загрузите XLSX файл</Form.Label>
                         <Form.Control
                             type="file"
                             accept=".xlsx"
@@ -107,4 +102,4 @@ const ImportPriceList = ({ show, onHide }) => {
     );
 };
 
-export default ImportPriceList;
+export default ImportBrandList;

@@ -1,21 +1,9 @@
-require('dotenv').config(); // Load environment variables
-const { Sequelize } = require('sequelize');
-const { Client } = require('pg'); // Use pg client to create the database if it doesn't exist
+require('dotenv').config();
+const { Client } = require('pg');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-// Initialize Sequelize instance
-const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        dialect: 'postgres',
-        host: process.env.DB_HOST || 'localhost',
-        port: process.env.DB_PORT || 5432,
-        logging: false, // Disable logging for cleaner output
-    }
-);
-
-// Function to create the database if it doesn't exist
+// Функция для создания базы, если её нет
 const createDatabaseIfNotExists = async () => {
     const client = new Client({
         user: process.env.DB_USER,
@@ -26,8 +14,6 @@ const createDatabaseIfNotExists = async () => {
 
     try {
         await client.connect();
-        console.log('Connected to PostgreSQL to check/create database.');
-
         const dbName = process.env.DB_NAME;
         const result = await client.query(
             `SELECT 1 FROM pg_database WHERE datname = $1`,
@@ -45,34 +31,16 @@ const createDatabaseIfNotExists = async () => {
         console.error('Error checking/creating database:', error.message);
     } finally {
         await client.end();
-        console.log('PostgreSQL client connection closed.');
     }
 };
 
-// Function to initialize the database
-const initDatabase = async () => {
-    try {
-        await createDatabaseIfNotExists(); // Ensure the database exists
-
-        console.log('Connecting to the database...');
-        await sequelize.authenticate();
-        console.log('Connection to the database has been established successfully.');
-
-        console.log('Synchronizing the database...');
-        await sequelize.sync({ force: true }); // Use `force: true` to drop and recreate tables
-        console.log('Database synchronized successfully.');
-    } catch (error) {
-        console.error('Error initializing the database:', error.message);
-    } finally {
-        await sequelize.close();
-        console.log('Database connection closed.');
-    }
-};
-
-// Run the initialization if this file is executed directly
+// Если файл запускается напрямую — создать базу
 if (require.main === module) {
-    initDatabase();
+    createDatabaseIfNotExists();
 }
 
-// Export the Sequelize instance and initDatabase function
-module.exports = { sequelize, initDatabase };
+// Экспортируем и Prisma, и функцию создания базы
+module.exports = {
+    prisma,
+    createDatabaseIfNotExists,
+};

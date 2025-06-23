@@ -22,3 +22,4 @@
 /server/shared
 
 /server/temp
+/server/.env
