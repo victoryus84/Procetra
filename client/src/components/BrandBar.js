@@ -8,7 +8,7 @@ const BrandBar = observer(() => {
 
     return (
         <Row className="d-flex">
-            {product.brands.map(brand =>
+            {product.filteredBrands.map(brand =>
                 <Card
                     style={{cursor:'pointer'}}
                     key={brand.id}

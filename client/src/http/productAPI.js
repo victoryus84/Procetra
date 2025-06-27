@@ -24,7 +24,7 @@ export const fetchBrands = async () => {
 
 // TypeBrand
 export const createTypeBrand = async (typeBrand) => {
-    const { data } = await $authHost.post('api/v1/typeBrand', typeBrand)
+    const { data } = await $authHost.post('api/v1/type-brand', typeBrand)
     return data
 }
 

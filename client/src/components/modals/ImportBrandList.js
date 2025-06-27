@@ -37,26 +37,27 @@ const ImportBrandList = ({ show, onHide }) => {
                 const sheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(sheet);
 
+                const promises = [];
                 for (const row of jsonData) {
                     let typeId = row.type;
-
-                    // Если type - не число, ищем по имени типа
                     if (isNaN(Number(typeId))) {
                         const foundType = types.find(
                             t => t.name.toLowerCase() === String(row.type).toLowerCase()
                         );
                         typeId = foundType ? foundType.id : null;
                     }
-
                     if (row.name && typeId) {
-                        // 1. Создаём бренд
-                        const brand = await createBrand({ name: row.name });
-                        // 2. Создаём связь Brand-Type
-                        if (brand && brand.id) {
-                            await createTypeBrand({ brandId: brand.id, typeId });
-                        }
+                        // Сохраняем промис, а не ждём его завершения
+                        promises.push(
+                            createBrand({ name: row.name }).then(brand => {
+                                if (brand && brand.id) {
+                                    return createTypeBrand({ brandId: brand.id, typeId });
+                                }
+                            })
+                        );
                     }
                 }
+                await Promise.all(promises);
 
                 alert("Бренды успешно импортированы!");
                 setFile(null);

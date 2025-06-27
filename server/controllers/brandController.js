@@ -16,7 +16,9 @@ class BrandController {
 
     async getAll(req, res, next) {
         try {
-            const brands = await prisma.brand.findMany();
+            const brands = await prisma.brand.findMany({
+                include: { typeBrands: true }
+            });
             return res.json(brands);
         } catch (error) {
             return next(ApiError.badRequest(error.message));

@@ -62,4 +62,10 @@ export default class ProductStore {
     get limit() {
         return this._limit
     }
+    get filteredBrands() {
+        if (!this._selectedType || !this._selectedType.id) return this._brands;
+        return this._brands.filter(brand =>
+            Array.isArray(brand.typeBrands) &&
+            brand.typeBrands?.some(tb => tb.typeId === this._selectedType.id))
+        ;}
 }
